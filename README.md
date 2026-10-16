@@ -8,7 +8,7 @@ Web del restaurante El Candil: la carta en un archivador de carpetas y la reserv
 ![Sin dependencias](https://img.shields.io/badge/dependencias-0-D39858)
 ![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-listo-EACEAA?logo=github&logoColor=150C0C&labelColor=EACEAA)
 
-🔗 [Sitio en vivo](https://pauladolado.github.io/El-Candil/) (disponible en cuanto se active GitHub Pages, ver [Despliegue](#despliegue))
+🔗 [Sitio en vivo](https://pauladolado.github.io/El-Candil2/) (disponible en cuanto se active GitHub Pages, ver [Despliegue](#despliegue))
 
 ![Portada de El Candil](docs/portada.png)
 
@@ -238,7 +238,7 @@ Al ser una web estática, se publica tal cual.
 
 1. En el repositorio, ve a **Settings → Pages**.
 2. En **Source**, elige **Deploy from a branch**, rama `main` y carpeta `/ (root)`.
-3. Guarda. En uno o dos minutos la web estará en https://pauladolado.github.io/El-Candil/.
+3. Guarda. En uno o dos minutos la web estará en https://pauladolado.github.io/El-Candil2/.
 
 Cada push a `main` vuelve a publicarla.
 
