@@ -55,7 +55,7 @@ body {
 ::selection { background: var(--whiskey); color: var(--balsamico); }
 
 img, svg { display: block; }
-h1, h2, h3, p, dl, dd, ul { margin: 0; }
+h1, h2, h3, h4, p, dl, dd, ul { margin: 0; }
 ul { padding: 0; list-style: none; }
 a { color: inherit; }
 button, input, textarea, select { font: inherit; color: inherit; }
@@ -199,6 +199,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 /* ---------- Portada: la etiqueta ---------- */
 
 .hero {
+  overflow-x: clip;
   display: grid;
   place-items: center;
   min-height: calc(100svh - var(--header));
@@ -247,7 +248,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .label__name {
   font-family: var(--f-script);
   font-weight: 400;
-  font-size: clamp(4.75rem, 17vw, 9.5rem);
+  font-size: clamp(4rem, 19vw, 9.5rem);
   line-height: .9;
   color: var(--coffee);
   letter-spacing: 0;
@@ -305,7 +306,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
   font-weight: 500;
   font-variant-numeric: tabular-nums;
   text-wrap: balance;
-  max-width: 40ch;
+  max-width: 52ch;
 }
 .label__today strong { color: var(--coffee); font-weight: 600; }
 
@@ -411,7 +412,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .folder {
   --tab-w: min(16rem, 60%);
   --tab-h: 3.2rem;
-  --overlap: 1rem;
+  --overlap: var(--tab-h);
   --stock: var(--champagne);
   --ink: var(--balsamico);
   --ink-2: var(--honey);
@@ -457,7 +458,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
   text-transform: uppercase;
   text-align: left;
   cursor: pointer;
-  transition: transform .45s var(--ease-out), padding .45s var(--ease-out);
+  transition: transform .45s var(--ease-out);
 }
 .folder__tab:hover { transform: translateY(-3px); }
 .folder__tab:focus-visible { outline-color: var(--champagne); outline-offset: 2px; }
@@ -586,8 +587,8 @@ button, input, textarea, select { font: inherit; color: inherit; }
   border: 1px solid currentColor;
   font-family: var(--f-display);
   font-weight: 700;
-  font-size: .64rem;
-  letter-spacing: .12em;
+  font-size: .7rem;
+  letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--ink);
 }
@@ -676,8 +677,8 @@ button, input, textarea, select { font: inherit; color: inherit; }
 }
 .drinks__head span:not(:first-child) {
   text-align: right;
-  font-size: .66rem;
-  letter-spacing: .12em;
+  font-size: .7rem;
+  letter-spacing: .1em;
   color: var(--ink-2);
 }
 .drink {
@@ -724,7 +725,6 @@ button, input, textarea, select { font: inherit; color: inherit; }
   padding: 1.6rem 1rem 1.5rem;
   background: var(--balsamico);
   border-top: 2px solid color-mix(in srgb, var(--whiskey) 45%, transparent);
-  border-radius: .2rem .2rem .45rem .45rem;
 }
 .drawer__plate {
   padding: .45rem 1.1rem;
@@ -978,8 +978,8 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .ticket__rows dt {
   font-family: var(--f-display);
   font-weight: 700;
-  font-size: .66rem;
-  letter-spacing: .14em;
+  font-size: .72rem;
+  letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--honey);
 }
@@ -1013,7 +1013,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .ticket.is-sent .ticket__stamp {
   opacity: 1;
   transform: rotate(-14deg) scale(1);
-  transition: opacity .25s ease-out, transform .45s cubic-bezier(.2, 1.4, .4, 1);
+  transition: opacity .2s ease-out, transform .5s var(--ease-out);
 }
 
 .ticket__status:empty { display: none; }
@@ -1114,7 +1114,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
   font-family: var(--f-script);
   font-size: clamp(4rem, 17vw, 11rem);
   line-height: 1;
-  color: var(--honey);
+  color: var(--whiskey);
 }
 .foot__small {
   margin-top: .75rem;
@@ -1123,3 +1123,29 @@ button, input, textarea, select { font: inherit; color: inherit; }
 }
 .foot__small a { text-underline-offset: .2em; }
 .foot__small a:hover { color: var(--whiskey); }
+
+/* ---------- Ajustes para pantallas estrechas ---------- */
+
+.bar__brand span { white-space: nowrap; }
+.label { min-width: 0; }
+
+@media (max-width: 36rem) {
+  .bar__brand { font-size: 1.55rem; }
+  .bar__candil { width: 1.7rem; height: 1.85rem; }
+  .label__ribbon {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: .35rem .6rem;
+    letter-spacing: .18em;
+    white-space: normal;
+  }
+  .label__ribbon::before,
+  .label__ribbon::after { display: none; }
+  .set { grid-template-columns: 1fr; }
+  .folder__lip { font-size: .8rem; }
+  .folder__lip span:first-child { flex: 1; }
+}
+.ticket__paper { overflow: hidden; }
+@media (max-width: 36rem) {
+  .folder__tab { letter-spacing: .08em; font-size: .76rem; padding-left: .95rem; }
+}
