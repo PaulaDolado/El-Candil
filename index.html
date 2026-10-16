@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>El Candil · Restaurante</title>
+  <meta name="description" content="El Candil, restaurante de cocina tradicional. Consulta la carta y el menú del día y reserva tu mesa.">
+  <meta name="theme-color" content="#150C0C">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+  <link rel="preload" href="fonts/Pencerio-Hairline.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=zodiak@400,700,800&f[]=general-sans@400,500,600&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <svg width="0" height="0" class="sr-only" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="candil" viewBox="0 0 160 170">
+        <g class="candil__iron" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M66 22c0-12 22-14 24-3 2 9-10 11-10 21"/>
+          <path d="M80 40v42"/>
+          <path d="M76 52l8 4M76 61l8 4M76 70l8 4"/>
+          <path d="M42 92c10-9 62-10 74-2l22-6c-5 10-13 14-22 16-16 12-58 12-72 2-6-4-6-8-2-10z"/>
+          <path d="M48 93c14-6 52-6 64-1"/>
+          <path d="M46 104v30M114 102v30"/>
+          <path d="M38 136c12-8 72-8 84-2l16-4c-5 8-11 11-18 12-18 10-62 10-76 2-6-3-8-6-6-8z"/>
+          <path d="M44 137c14-5 60-5 72 0"/>
+          <path d="M136 84l3-4"/>
+        </g>
+        <g class="candil__flame">
+          <path class="candil__flame-outer" d="M136 81c-8-10-4-21 4-32 6 12 10 21 3 31-2 3-5 3-7 1z"/>
+          <path class="candil__flame-inner" d="M138.5 77c-3-5-1-10 2-15 2 5 4 10 1 15-1 1-2 1-3 0z"/>
+        </g>
+      </symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 1 3.6 6.7L4 20l1.3-3.5A7.9 7.9 0 0 1 4 12z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 10.2c.4 2 2 3.6 4 4.2l1.2-1.1 1.8.8-.3 1.6c-3.6.2-7-3.1-6.8-6.8L10.5 8.6l.8 1.8z" fill="currentColor"/></symbol>
+      <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M6 12h12M12 6v12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6.2-6.5-11.2a6.5 6.5 0 0 1 13 0C18.5 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="9.8" r="2.3" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+      <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.6 3.5l2.6.4 1.3 4-1.9 1.4a11 11 0 0 0 6.1 6.1l1.4-1.9 4 1.3.4 2.6c-.2 1.7-1.6 3-3.3 3A15.7 15.7 0 0 1 3.5 6.8c0-1.7 1.4-3.1 3.1-3.3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    </defs>
+  </svg>
+
+  <a class="skip" href="#carta">Saltar a la carta</a>
+
+  <header class="bar">
+    <a class="bar__brand" href="#inicio" aria-label="El Candil, inicio">
+      <svg class="bar__candil" aria-hidden="true"><use href="#candil"/></svg>
+      <span>El Candil</span>
+    </a>
+    <nav class="bar__nav" aria-label="Principal">
+      <a href="#carta">Carta</a>
+      <a href="#visitanos">Horario</a>
+      <a class="bar__cta" href="#reservar">Reservar</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Portada: la etiqueta -->
+    <section class="hero" id="inicio" aria-labelledby="hero-title">
+      <div class="label">
+        <div class="label__frame">
+          <svg class="label__candil" aria-hidden="true"><use href="#candil"/></svg>
+          <h1 class="label__name" id="hero-title">El Candil</h1>
+          <p class="label__ribbon"><span>Restaurante</span><span aria-hidden="true" class="label__dot"></span><span>Cocina tradicional</span></p>
+          <p class="label__line">Guisos de cuchara, brasa y postres de la casa. Mira la carta y reserva tu mesa en un minuto.</p>
+          <div class="label__actions">
+            <a class="btn btn--ink" href="#reservar">Reservar mesa</a>
+            <a class="btn btn--line" href="#carta">Ver la carta</a>
+          </div>
+          <p class="label__today" id="hoy" aria-live="polite"></p>
+        </div>
+        <a class="medal" href="#carta" data-open="menu-del-dia" aria-label="Ver el menú del día">
+          <svg class="medal__ring" viewBox="0 0 120 120" aria-hidden="true">
+            <defs><path id="medal-path" d="M60 60m-46 0a46 46 0 1 1 92 0a46 46 0 1 1-92 0"/></defs>
+            <text><textPath href="#medal-path" startOffset="0" textLength="286" lengthAdjust="spacing">MENÚ DEL DÍA · MARTES A VIERNES · </textPath></text>
+          </svg>
+          <span class="medal__price" id="medal-price"></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- La carta: el archivador -->
+    <section class="carta" id="carta" aria-labelledby="carta-title">
+      <div class="carta__head">
+        <h2 class="script-title" id="carta-title">La carta</h2>
+        <p class="carta__hint">Toca la pestaña de cada carpeta para abrirla.</p>
+      </div>
+
+      <div class="cabinet" id="cabinet">
+        <!-- Las carpetas se generan desde js/data.js -->
+      </div>
+      <div class="drawer" aria-hidden="true">
+        <span class="drawer__plate">El Candil · Carta</span>
+        <span class="drawer__pull"></span>
+      </div>
+
+      <p class="carta__foot">Precios con IVA incluido. ¿Alergias o intolerancias? Díselo a tu camarero o indícalo al reservar.</p>
+    </section>
+
+    <!-- Reserva -->
+    <section class="reserva" id="reservar" aria-labelledby="reserva-title">
+      <div class="reserva__head">
+        <h2 class="script-title" id="reserva-title">Reserva tu mesa</h2>
+        <p>Rellena los datos y te abrimos WhatsApp con el mensaje ya escrito. Solo tienes que enviarlo y te confirmamos la mesa.</p>
+      </div>
+
+      <form class="booking" id="booking" novalidate>
+        <div class="booking__fields">
+          <div class="field">
+            <label for="f-fecha">Día</label>
+            <input type="date" id="f-fecha" name="fecha" required aria-describedby="e-fecha">
+            <p class="field__error" id="e-fecha"></p>
+          </div>
+
+          <fieldset class="field">
+            <legend>Hora</legend>
+            <div class="slots" id="slots">
+              <p class="slots__empty">Elige primero el día y te enseñamos las horas libres.</p>
+            </div>
+            <p class="field__error" id="e-hora"></p>
+          </fieldset>
+
+          <div class="field">
+            <span class="field__label" id="l-comensales">Comensales</span>
+            <div class="stepper" role="group" aria-labelledby="l-comensales">
+              <button type="button" class="stepper__btn" data-step="-1" aria-label="Una persona menos"><svg aria-hidden="true"><use href="#i-minus"/></svg></button>
+              <input type="number" id="f-comensales" name="comensales" value="2" min="1" inputmode="numeric" aria-labelledby="l-comensales" aria-describedby="e-comensales">
+              <button type="button" class="stepper__btn" data-step="1" aria-label="Una persona más"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
+            </div>
+            <p class="field__error" id="e-comensales"></p>
+          </div>
+
+          <div class="field field--half">
+            <label for="f-nombre">Nombre</label>
+            <input type="text" id="f-nombre" name="nombre" autocomplete="name" required aria-describedby="e-nombre">
+            <p class="field__error" id="e-nombre"></p>
+          </div>
+
+          <div class="field field--half">
+            <label for="f-telefono">Teléfono</label>
+            <input type="tel" id="f-telefono" name="telefono" autocomplete="tel" inputmode="tel" placeholder="600 123 456" required aria-describedby="e-telefono">
+            <p class="field__error" id="e-telefono"></p>
+          </div>
+
+          <div class="field">
+            <label for="f-notas">Comentarios <span class="field__opt">(opcional)</span></label>
+            <textarea id="f-notas" name="notas" rows="3" placeholder="Alergias, trona para un bebé, una celebración…"></textarea>
+          </div>
+        </div>
+
+        <aside class="ticket" aria-label="Resumen de tu reserva">
+          <div class="ticket__paper">
+            <p class="ticket__brand">El Candil</p>
+            <p class="ticket__kind">Reserva de mesa</p>
+            <dl class="ticket__rows">
+              <div><dt>Día</dt><dd data-t="fecha">—</dd></div>
+              <div><dt>Hora</dt><dd data-t="hora">—</dd></div>
+              <div><dt>Comensales</dt><dd data-t="comensales">2</dd></div>
+              <div><dt>A nombre de</dt><dd data-t="nombre">—</dd></div>
+              <div><dt>Teléfono</dt><dd data-t="telefono">—</dd></div>
+              <div class="ticket__notes"><dt>Comentarios</dt><dd data-t="notas">—</dd></div>
+            </dl>
+            <p class="ticket__stamp" aria-hidden="true">Enviada</p>
+          </div>
+          <button class="btn btn--ink btn--wide" type="submit">
+            <svg aria-hidden="true"><use href="#i-chat"/></svg>
+            Enviar reserva por WhatsApp
+          </button>
+          <div class="ticket__status" id="booking-status" role="status"></div>
+        </aside>
+      </form>
+    </section>
+
+    <!-- Visítanos -->
+    <section class="visit" id="visitanos" aria-labelledby="visit-title">
+      <h2 class="script-title" id="visit-title">Visítanos</h2>
+      <div class="visit__grid">
+        <div class="visit__block">
+          <h3>Horario</h3>
+          <table class="hours" id="hours"></table>
+        </div>
+        <div class="visit__block">
+          <h3>Dónde estamos</h3>
+          <p class="visit__big" id="dir"></p>
+          <a class="link" id="map-link" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-pin"/></svg>Cómo llegar</a>
+        </div>
+        <div class="visit__block">
+          <h3>Llámanos</h3>
+          <p class="visit__big"><a id="tel-link"></a></p>
+          <p class="visit__small">Para grupos grandes, menús de celebración o cualquier duda.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p class="foot__name">El Candil</p>
+    <p class="foot__small">© <span id="year"></span> El Candil · <a href="#carta">Carta</a> · <a href="#reservar">Reservar</a></p>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

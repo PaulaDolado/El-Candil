@@ -1,0 +1,1125 @@
+/* El Candil — etiqueta de vermut y chapa esmaltada */
+
+@font-face {
+  font-family: "Pencerio";
+  src: url("../fonts/Pencerio-Hairline.woff2") format("woff2"),
+       url("../fonts/Pencerio-Hairline.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --champagne: #EACEAA;
+  --honey: #85431E;
+  --whiskey: #D39858;
+  --coffee: #34150F;
+  --balsamico: #150C0C;
+
+  --f-script: "Pencerio", "Brush Script MT", cursive;
+  --f-display: "Zodiak", Georgia, "Times New Roman", serif;
+  --f-text: "General Sans", "Segoe UI", system-ui, sans-serif;
+
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --header: 3.75rem;
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .2 0 0 0 0 .08 0 0 0 0 .05 0 0 0 .11 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  color-scheme: dark;
+  accent-color: var(--honey);
+  scrollbar-color: var(--honey) var(--balsamico);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header) + .5rem);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+body {
+  margin: 0;
+  background: var(--balsamico);
+  color: var(--champagne);
+  font-family: var(--f-text);
+  font-size: 1rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection { background: var(--whiskey); color: var(--balsamico); }
+
+img, svg { display: block; }
+h1, h2, h3, p, dl, dd, ul { margin: 0; }
+ul { padding: 0; list-style: none; }
+a { color: inherit; }
+button, input, textarea, select { font: inherit; color: inherit; }
+
+:focus-visible {
+  outline: 3px solid var(--whiskey);
+  outline-offset: 3px;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: var(--gutter);
+  top: -4rem;
+  z-index: 50;
+  padding: .7rem 1rem;
+  background: var(--whiskey);
+  color: var(--balsamico);
+  font-weight: 600;
+}
+.skip:focus { top: .5rem; }
+
+/* ---------- Tipos compartidos ---------- */
+
+.script-title {
+  font-family: var(--f-script);
+  font-weight: 400;
+  font-size: clamp(3.4rem, 10vw, 6.75rem);
+  line-height: .95;
+  letter-spacing: 0;
+}
+
+.caps {
+  font-family: var(--f-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+}
+
+/* ---------- Botones: chapa esmaltada con filete interior ---------- */
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  min-height: 3.25rem;
+  padding: .9rem 1.6rem;
+  border: 2px solid var(--coffee);
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: .82rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .25s var(--ease-out), color .25s var(--ease-out), transform .25s var(--ease-out);
+}
+.btn::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid currentColor;
+  opacity: .55;
+  pointer-events: none;
+}
+.btn svg { width: 1.25rem; height: 1.25rem; }
+.btn:active { transform: translateY(1px); }
+
+.btn--ink { background: var(--honey); color: var(--champagne); border-color: var(--honey); }
+.btn--ink:hover { background: var(--coffee); border-color: var(--coffee); }
+
+.btn--line { background: transparent; color: var(--coffee); }
+.btn--line:hover { background: var(--coffee); color: var(--champagne); }
+
+.btn--wide { width: 100%; }
+
+/* ---------- Barra superior ---------- */
+
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  height: var(--header);
+  padding-inline: var(--gutter);
+  background: var(--balsamico);
+  border-bottom: 1px solid color-mix(in srgb, var(--whiskey) 28%, transparent);
+}
+
+.bar__brand {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  text-decoration: none;
+  color: var(--champagne);
+  font-family: var(--f-script);
+  font-size: 1.9rem;
+  line-height: 1;
+}
+.bar__candil { width: 2.1rem; height: 2.25rem; color: var(--champagne); }
+
+.bar__nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(.9rem, 3vw, 2rem);
+}
+.bar__nav a {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: .74rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-underline-offset: .4em;
+}
+.bar__nav a:not(.bar__cta):hover { text-decoration: underline; text-decoration-thickness: 1px; }
+.bar__cta {
+  padding: .6rem .95rem;
+  background: var(--whiskey);
+  color: var(--balsamico);
+  transition: background-color .2s;
+}
+.bar__cta:hover { background: var(--champagne); }
+
+@media (max-width: 26rem) {
+  .bar__nav a[href="#visitanos"] { display: none; }
+}
+
+/* ---------- Portada: la etiqueta ---------- */
+
+.hero {
+  display: grid;
+  place-items: center;
+  min-height: calc(100svh - var(--header));
+  padding: clamp(3rem, 8vw, 5.5rem) var(--gutter);
+}
+
+.label {
+  position: relative;
+  width: min(100%, 50rem);
+}
+
+.label__frame {
+  --n: 1.15rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: clamp(2.5rem, 6vw, 4rem) clamp(1.75rem, 6vw, 4.5rem) clamp(2.25rem, 5vw, 3.25rem);
+  background: var(--grain), var(--champagne);
+  color: var(--coffee);
+  -webkit-mask: radial-gradient(var(--n) at var(--n) var(--n), #0000 98%, #000) calc(-1 * var(--n)) calc(-1 * var(--n));
+          mask: radial-gradient(var(--n) at var(--n) var(--n), #0000 98%, #000) calc(-1 * var(--n)) calc(-1 * var(--n));
+}
+.label__frame::before,
+.label__frame::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border: 3px solid var(--coffee);
+  inset: .95rem;
+}
+.label__frame::after {
+  border-width: 1px;
+  inset: 1.45rem;
+}
+
+.label__candil {
+  width: clamp(5.5rem, 14vw, 7.5rem);
+  height: auto;
+  aspect-ratio: 160 / 170;
+  color: var(--coffee);
+  margin-bottom: -.25rem;
+}
+
+.label__name {
+  font-family: var(--f-script);
+  font-weight: 400;
+  font-size: clamp(4.75rem, 17vw, 9.5rem);
+  line-height: .9;
+  color: var(--coffee);
+  letter-spacing: 0;
+  padding: 0 .1em .08em;
+}
+
+.label__ribbon {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  width: min(100%, 30rem);
+  margin-top: .9rem;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(.68rem, 1.8vw, .82rem);
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--honey);
+  white-space: nowrap;
+}
+.label__ribbon::before,
+.label__ribbon::after {
+  content: "";
+  flex: 1;
+  height: 0;
+  border-top: 3px double var(--honey);
+}
+.label__dot {
+  width: .4rem; height: .4rem;
+  background: var(--honey);
+  transform: rotate(45deg);
+  flex: none;
+}
+
+.label__line {
+  max-width: 32ch;
+  margin-top: 1.4rem;
+  font-size: clamp(1rem, 2.2vw, 1.15rem);
+  line-height: 1.5;
+  text-wrap: balance;
+}
+
+.label__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .75rem;
+  margin-top: 1.9rem;
+}
+
+.label__today {
+  margin-top: 1.6rem;
+  font-size: .86rem;
+  color: var(--honey);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  text-wrap: balance;
+  max-width: 40ch;
+}
+.label__today strong { color: var(--coffee); font-weight: 600; }
+
+/* Medalla del menú del día */
+.medal {
+  position: absolute;
+  top: clamp(-3.25rem, -5vw, -2.25rem);
+  right: clamp(-2.75rem, -4vw, -1rem);
+  display: grid;
+  place-items: center;
+  width: clamp(6.5rem, 15vw, 8.5rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--grain), var(--whiskey);
+  color: var(--balsamico);
+  text-decoration: none;
+  rotate: -10deg;
+  transition: rotate .5s var(--ease-out), scale .5s var(--ease-out);
+}
+.medal::before {
+  content: "";
+  position: absolute;
+  inset: 20%;
+  border-radius: 50%;
+  border: 1px solid var(--balsamico);
+}
+.medal:hover { rotate: -2deg; scale: 1.04; }
+.medal__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.medal__ring text {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 10px;
+  fill: var(--balsamico);
+}
+.medal__price {
+  position: relative;
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: clamp(1.05rem, 2.6vw, 1.4rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 40rem) {
+  .medal { top: -2.6rem; right: -.4rem; }
+}
+
+/* La llama del candil */
+.candil__flame-outer { fill: var(--whiskey); }
+.candil__flame-inner { fill: var(--champagne); }
+.bar__candil .candil__flame-inner { fill: var(--balsamico); }
+.candil__flame {
+  transform-box: fill-box;
+  transform-origin: 40% 100%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .label__candil .candil__flame { animation: flicker 3.2s ease-in-out infinite; }
+}
+@keyframes flicker {
+  0%, 100% { transform: scale(1, 1) rotate(0); }
+  22% { transform: scale(.94, 1.06) rotate(-2deg); }
+  48% { transform: scale(1.04, .95) rotate(1.5deg); }
+  71% { transform: scale(.97, 1.04) rotate(-1deg); }
+}
+
+/* ---------- La carta: archivador ---------- */
+
+.carta {
+  padding: clamp(4rem, 10vw, 7rem) var(--gutter) clamp(4rem, 9vw, 6rem);
+  background: var(--coffee);
+}
+
+.carta__head,
+.cabinet,
+.drawer,
+.carta__foot {
+  width: min(100%, 64rem);
+  margin-inline: auto;
+}
+
+.carta__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: .5rem 2rem;
+  margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+}
+.carta__head .script-title { color: var(--champagne); }
+.carta__hint {
+  color: var(--whiskey);
+  font-size: 1rem;
+  padding-bottom: .6rem;
+}
+
+.cabinet { position: relative; }
+
+.folder {
+  --tab-w: min(16rem, 60%);
+  --tab-h: 3.2rem;
+  --overlap: 1rem;
+  --stock: var(--champagne);
+  --ink: var(--balsamico);
+  --ink-2: var(--honey);
+  --rule: color-mix(in srgb, var(--ink) 22%, transparent);
+  position: relative;
+  margin-top: calc(-1 * var(--overlap));
+  color: var(--ink);
+  filter: drop-shadow(0 -3px 5px rgb(21 12 12 / .35));
+}
+.folder:first-child { margin-top: 0; }
+
+.folder--whiskey { --stock: var(--whiskey); --ink: var(--balsamico); --ink-2: var(--coffee); }
+.folder--honey {
+  --stock: var(--honey);
+  --ink: var(--champagne);
+  --ink-2: color-mix(in srgb, var(--champagne) 84%, var(--honey));
+}
+
+.folder__head {
+  position: relative;
+  height: var(--tab-h);
+}
+
+.folder__tab {
+  position: absolute;
+  bottom: -1px;
+  left: calc((100% - var(--tab-w)) * var(--pos, 0) / 3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  width: var(--tab-w);
+  height: calc(var(--tab-h) + 1px);
+  padding: 0 .9rem 0 1.15rem;
+  border: 0;
+  border-radius: .8rem .8rem 0 0;
+  background: var(--grain), var(--stock);
+  color: var(--ink);
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: .8rem;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  text-align: left;
+  cursor: pointer;
+  transition: transform .45s var(--ease-out), padding .45s var(--ease-out);
+}
+.folder__tab:hover { transform: translateY(-3px); }
+.folder__tab:focus-visible { outline-color: var(--champagne); outline-offset: 2px; }
+.folder--champagne .folder__tab:focus-visible,
+.folder--whiskey .folder__tab:focus-visible { outline-color: var(--champagne); }
+
+.folder__tab-short { display: none; }
+@media (max-width: 36rem) {
+  .folder__tab-full { display: none; }
+  .folder__tab-short { display: inline; }
+}
+
+.folder__chev {
+  flex: none;
+  width: 1.3rem;
+  height: 1.3rem;
+  transition: transform .5s var(--ease-out);
+}
+.folder.is-open .folder__chev { transform: rotate(180deg); }
+.folder.is-open .folder__tab { transform: translateY(-6px); padding-bottom: 0; }
+
+.folder__body {
+  display: grid;
+  grid-template-rows: auto 0fr;
+  background: var(--grain), var(--stock);
+  border-radius: .25rem .25rem 0 0;
+  transition: grid-template-rows .6s var(--ease-out);
+}
+.folder.is-open .folder__body { grid-template-rows: auto 1fr; }
+
+.folder__lip {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .7rem clamp(1.15rem, 3vw, 1.75rem) calc(.85rem + var(--overlap));
+  font-size: .86rem;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.folder__lip span:last-child { font-weight: 600; }
+.folder.is-open .folder__lip { padding-bottom: .4rem; }
+
+.folder__inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.folder__content {
+  padding: .5rem clamp(1.15rem, 4.5vw, 3rem) calc(2.75rem + var(--overlap));
+  visibility: hidden;
+  transition: visibility 0s .6s;
+}
+.folder.is-open .folder__content { visibility: visible; transition: visibility 0s 0s; }
+
+.folder__title {
+  font-family: var(--f-script);
+  font-weight: 400;
+  font-size: clamp(3rem, 9vw, 5rem);
+  line-height: 1;
+  color: var(--ink);
+  padding-bottom: .1em;
+}
+.folder__note {
+  max-width: 60ch;
+  margin-top: .35rem;
+  color: var(--ink-2);
+  font-size: .98rem;
+}
+
+/* Lista de platos */
+.dishes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 25rem), 1fr));
+  column-gap: clamp(2rem, 5vw, 3.5rem);
+  margin-top: 1.75rem;
+}
+.dish {
+  padding: 1rem 0 1.05rem;
+  border-top: 1px solid var(--rule);
+}
+.dish__row {
+  display: flex;
+  align-items: baseline;
+  gap: .55rem;
+}
+.dish__name {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 1.12rem;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+.dish__leader {
+  flex: 1;
+  min-width: 1.5rem;
+  border-bottom: 2px dotted var(--rule);
+  transform: translateY(-.3em);
+}
+.dish__price {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 1.12rem;
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+.dish__desc {
+  margin-top: .2rem;
+  font-size: .95rem;
+  line-height: 1.45;
+  max-width: 46ch;
+}
+.dish__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .35rem .6rem;
+  margin-top: .45rem;
+  font-size: .78rem;
+  color: var(--ink-2);
+}
+.dish__allergens::before { content: "Alérgenos: "; font-weight: 600; }
+.tag {
+  display: inline-block;
+  padding: .12rem .45rem .1rem;
+  border: 1px solid currentColor;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: .64rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* Menús de precio cerrado */
+.set {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1rem clamp(1.5rem, 4vw, 2.75rem);
+  margin-top: 1.5rem;
+  padding: 1.25rem 0;
+  border-block: 3px double var(--rule);
+}
+.set__price {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: clamp(2.6rem, 7vw, 3.75rem);
+  line-height: 1;
+  font-variant-numeric: lining-nums;
+  white-space: nowrap;
+}
+.set__price small {
+  display: block;
+  margin-top: .35rem;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.set__when {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.set__includes { margin-top: .25rem; font-size: .95rem; max-width: 52ch; }
+
+.courses {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1.5rem clamp(1.5rem, 4vw, 3rem);
+  margin-top: 1.75rem;
+}
+.course__title {
+  padding-bottom: .5rem;
+  border-bottom: 2px solid var(--ink);
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: .8rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.course li {
+  padding: .7rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.course__dish {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.3;
+}
+.course .dish__meta { margin-top: .25rem; }
+
+/* Bebidas */
+.drinks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 25rem), 1fr));
+  gap: 2rem clamp(2rem, 5vw, 3.5rem);
+  margin-top: 1.75rem;
+}
+.drinks__group { align-self: start; }
+.drinks__head {
+  display: grid;
+  grid-template-columns: 1fr repeat(var(--cols, 1), 4.5rem);
+  align-items: end;
+  gap: .5rem;
+  padding-bottom: .5rem;
+  border-bottom: 2px solid var(--ink);
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: .8rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.drinks__head span:not(:first-child) {
+  text-align: right;
+  font-size: .66rem;
+  letter-spacing: .12em;
+  color: var(--ink-2);
+}
+.drink {
+  display: grid;
+  grid-template-columns: 1fr repeat(var(--cols, 1), 4.5rem);
+  align-items: baseline;
+  gap: .5rem;
+  padding: .65rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.drink__name { font-family: var(--f-display); font-weight: 700; font-size: 1.05rem; line-height: 1.3; }
+.drink__desc { display: block; font-family: var(--f-text); font-weight: 400; font-size: .86rem; color: var(--ink-2); }
+.drink__price {
+  text-align: right;
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+
+/* Entrada del contenido al abrir la carpeta */
+@media (prefers-reduced-motion: no-preference) {
+  .folder.is-open .reveal {
+    animation: pull .7s var(--ease-out) both;
+    animation-delay: calc(120ms + var(--d, 0) * 35ms);
+  }
+}
+@keyframes pull {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .folder__body, .folder__tab, .folder__chev { transition: none; }
+}
+
+/* Frente del cajón */
+.drawer {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: .9rem;
+  margin-top: -1rem;
+  padding: 1.6rem 1rem 1.5rem;
+  background: var(--balsamico);
+  border-top: 2px solid color-mix(in srgb, var(--whiskey) 45%, transparent);
+  border-radius: .2rem .2rem .45rem .45rem;
+}
+.drawer__plate {
+  padding: .45rem 1.1rem;
+  border: 2px solid var(--whiskey);
+  outline: 1px solid var(--whiskey);
+  outline-offset: 3px;
+  background: var(--grain), var(--champagne);
+  color: var(--coffee);
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: .7rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.drawer__pull {
+  width: 7.5rem;
+  height: .85rem;
+  border: 2px solid var(--whiskey);
+  border-top: 0;
+  border-radius: 0 0 .6rem .6rem;
+}
+
+.carta__foot {
+  margin-top: 1.5rem;
+  color: var(--whiskey);
+  font-size: .92rem;
+  max-width: 64rem;
+}
+
+/* ---------- Reserva ---------- */
+
+.reserva {
+  padding: clamp(4rem, 10vw, 7rem) var(--gutter);
+  background: var(--grain), var(--whiskey);
+  color: var(--balsamico);
+}
+.reserva__head,
+.booking {
+  width: min(100%, 64rem);
+  margin-inline: auto;
+}
+.reserva__head .script-title { color: var(--coffee); }
+.reserva__head p {
+  max-width: 54ch;
+  margin-top: .75rem;
+  font-size: 1.05rem;
+}
+
+.booking {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+  margin-top: clamp(2rem, 5vw, 3rem);
+}
+@media (max-width: 52rem) {
+  .booking { grid-template-columns: 1fr; }
+}
+
+.booking__fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem 1.25rem;
+}
+
+.field {
+  grid-column: 1 / -1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.field--half { grid-column: span 1; }
+@media (max-width: 30rem) {
+  .field--half { grid-column: 1 / -1; }
+}
+
+.field label,
+.field legend,
+.field__label {
+  display: block;
+  margin-bottom: .5rem;
+  padding: 0;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: .76rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--coffee);
+}
+.field__opt { text-transform: none; letter-spacing: 0; font-family: var(--f-text); font-weight: 500; }
+
+.field input[type="text"],
+.field input[type="tel"],
+.field input[type="date"],
+.field textarea {
+  display: block;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: .75rem .9rem;
+  border: 2px solid var(--coffee);
+  border-radius: 0;
+  background: var(--champagne);
+  color: var(--balsamico);
+  font-size: 1.05rem;
+  caret-color: var(--honey);
+  transition: border-color .2s, box-shadow .2s;
+}
+.field textarea { resize: vertical; min-height: 6rem; line-height: 1.45; }
+.field input::placeholder,
+.field textarea::placeholder { color: color-mix(in srgb, var(--coffee) 62%, var(--champagne)); }
+.field input:focus-visible,
+.field textarea:focus-visible { outline: 3px solid var(--balsamico); outline-offset: 2px; }
+.field input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: .8; }
+
+.field [aria-invalid="true"] { border-color: var(--balsamico); border-width: 3px; }
+
+.field__error {
+  display: none;
+  align-items: center;
+  gap: .5rem;
+  margin-top: .5rem;
+  font-weight: 600;
+  font-size: .92rem;
+  color: var(--balsamico);
+}
+.field__error:not(:empty) { display: flex; }
+.field__error::before {
+  content: "";
+  flex: none;
+  width: .55rem; height: .55rem;
+  background: var(--balsamico);
+  transform: rotate(45deg);
+}
+
+/* Horas */
+.slots { display: grid; gap: 1rem; }
+.slots__empty { font-size: .95rem; color: var(--coffee); }
+.slots__group h4 {
+  margin: 0 0 .5rem;
+  font-family: var(--f-text);
+  font-weight: 600;
+  font-size: .85rem;
+  color: var(--coffee);
+}
+.slots__list { display: flex; flex-wrap: wrap; gap: .5rem; }
+.slot input { position: absolute; opacity: 0; pointer-events: none; }
+.slot span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 .95rem;
+  border: 2px solid var(--coffee);
+  background: var(--champagne);
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums lining-nums;
+  cursor: pointer;
+  transition: background-color .2s, color .2s;
+}
+.slot span:hover { background: color-mix(in srgb, var(--champagne) 70%, var(--whiskey)); }
+.slot input:checked + span { background: var(--balsamico); color: var(--champagne); border-color: var(--balsamico); }
+.slot input:focus-visible + span { outline: 3px solid var(--balsamico); outline-offset: 2px; }
+
+/* Comensales */
+.stepper { display: inline-flex; align-items: stretch; }
+.stepper__btn {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border: 2px solid var(--coffee);
+  background: var(--coffee);
+  color: var(--champagne);
+  cursor: pointer;
+  transition: background-color .2s;
+}
+.stepper__btn:hover { background: var(--balsamico); }
+.stepper__btn:disabled { background: transparent; color: var(--coffee); cursor: not-allowed; opacity: .55; }
+.stepper__btn svg { width: 1.2rem; height: 1.2rem; }
+.stepper input {
+  width: 4.5rem;
+  border: 2px solid var(--coffee);
+  border-inline: 0;
+  border-radius: 0;
+  background: var(--champagne);
+  color: var(--balsamico);
+  text-align: center;
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 1.4rem;
+  font-variant-numeric: tabular-nums lining-nums;
+  -moz-appearance: textfield;
+          appearance: textfield;
+}
+.stepper input::-webkit-outer-spin-button,
+.stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.stepper input:focus-visible { outline: 3px solid var(--balsamico); outline-offset: 2px; }
+
+/* Ticket */
+.ticket {
+  position: sticky;
+  top: calc(var(--header) + 1.5rem);
+  display: grid;
+  gap: 1rem;
+}
+.ticket__paper {
+  --n: .9rem;
+  position: relative;
+  padding: 2rem 1.75rem 1.75rem;
+  background: var(--grain), var(--champagne);
+  color: var(--balsamico);
+  -webkit-mask: radial-gradient(var(--n) at var(--n) var(--n), #0000 98%, #000) calc(-1 * var(--n)) calc(-1 * var(--n));
+          mask: radial-gradient(var(--n) at var(--n) var(--n), #0000 98%, #000) calc(-1 * var(--n)) calc(-1 * var(--n));
+}
+.ticket__paper::before {
+  content: "";
+  position: absolute;
+  inset: .75rem;
+  border: 1px solid var(--coffee);
+  pointer-events: none;
+}
+.ticket__brand {
+  font-family: var(--f-script);
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--coffee);
+  text-align: center;
+}
+.ticket__kind {
+  margin-top: .35rem;
+  padding-bottom: 1rem;
+  border-bottom: 3px double var(--coffee);
+  text-align: center;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: .7rem;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--honey);
+}
+.ticket__rows > div {
+  display: grid;
+  grid-template-columns: 7.25rem 1fr;
+  gap: .75rem;
+  align-items: baseline;
+  padding: .7rem 0;
+  border-bottom: 1px dashed color-mix(in srgb, var(--coffee) 40%, transparent);
+}
+.ticket__rows dt {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: .66rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--honey);
+}
+.ticket__rows dd {
+  font-weight: 600;
+  font-size: 1.02rem;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.ticket__rows dd:first-letter { text-transform: uppercase; }
+.ticket__rows dd.is-empty { color: color-mix(in srgb, var(--coffee) 55%, var(--champagne)); font-weight: 500; }
+.ticket__notes dd { font-weight: 500; font-size: .95rem; }
+
+.ticket__stamp {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 2.25rem;
+  padding: .35rem .9rem;
+  border: 4px double var(--honey);
+  color: var(--honey);
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: rotate(-14deg) scale(1.7);
+  pointer-events: none;
+  background: color-mix(in srgb, var(--champagne) 80%, transparent);
+}
+.ticket.is-sent .ticket__stamp {
+  opacity: 1;
+  transform: rotate(-14deg) scale(1);
+  transition: opacity .25s ease-out, transform .45s cubic-bezier(.2, 1.4, .4, 1);
+}
+
+.ticket__status:empty { display: none; }
+.ticket__status {
+  padding: 1rem 1.1rem;
+  border: 2px solid var(--balsamico);
+  font-size: .95rem;
+  line-height: 1.5;
+}
+.ticket__status a { font-weight: 600; text-underline-offset: .2em; }
+
+/* ---------- Visítanos ---------- */
+
+.visit {
+  padding: clamp(4rem, 10vw, 6.5rem) var(--gutter);
+  background: var(--balsamico);
+}
+.visit > .script-title,
+.visit__grid {
+  width: min(100%, 64rem);
+  margin-inline: auto;
+}
+.visit > .script-title { color: var(--whiskey); }
+.visit__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 2.5rem clamp(2rem, 5vw, 4rem);
+  margin-top: 2.25rem;
+}
+.visit__block h3 {
+  padding-bottom: .6rem;
+  margin-bottom: 1rem;
+  border-bottom: 3px double color-mix(in srgb, var(--whiskey) 60%, transparent);
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: .78rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--whiskey);
+}
+.visit__big {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 1.45rem;
+  line-height: 1.3;
+}
+.visit__big a { text-decoration: none; }
+.visit__big a:hover { color: var(--whiskey); }
+.visit__small { margin-top: .6rem; font-size: .95rem; color: color-mix(in srgb, var(--champagne) 78%, var(--balsamico)); }
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  margin-top: .9rem;
+  color: var(--whiskey);
+  font-weight: 600;
+  text-underline-offset: .25em;
+}
+.link svg { width: 1.15rem; height: 1.15rem; }
+.link:hover { color: var(--champagne); }
+
+.hours { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums lining-nums; }
+.hours th,
+.hours td {
+  padding: .5rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--champagne) 14%, transparent);
+  text-align: left;
+  vertical-align: top;
+  font-size: .97rem;
+}
+.hours th { font-weight: 500; padding-right: 1rem; white-space: nowrap; }
+.hours td { text-align: right; }
+.hours .is-closed td { color: color-mix(in srgb, var(--champagne) 65%, var(--balsamico)); }
+.hours .is-today th,
+.hours .is-today td { color: var(--whiskey); font-weight: 600; }
+.hours .is-today th::after {
+  content: "hoy";
+  margin-left: .5rem;
+  padding: .05rem .4rem;
+  border: 1px solid currentColor;
+  font-family: var(--f-display);
+  font-size: .6rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  vertical-align: .15em;
+}
+
+/* ---------- Pie ---------- */
+
+.foot {
+  padding: 2rem var(--gutter) 2.5rem;
+  background: var(--balsamico);
+  border-top: 1px solid color-mix(in srgb, var(--whiskey) 25%, transparent);
+  text-align: center;
+}
+.foot__name {
+  font-family: var(--f-script);
+  font-size: clamp(4rem, 17vw, 11rem);
+  line-height: 1;
+  color: var(--honey);
+}
+.foot__small {
+  margin-top: .75rem;
+  font-size: .85rem;
+  color: color-mix(in srgb, var(--champagne) 75%, var(--balsamico));
+}
+.foot__small a { text-underline-offset: .2em; }
+.foot__small a:hover { color: var(--whiskey); }
