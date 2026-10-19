@@ -88,6 +88,28 @@
         <p class="carta__hint">Toca la pestaña de cada carpeta para abrirla.</p>
       </div>
 
+      <div class="allergy" id="allergy">
+        <div class="allergy__row">
+          <span class="allergy__label" id="allergy-label">Soy alérgico a:</span>
+          <button type="button" class="allergy__toggle" id="allergy-toggle" aria-expanded="false" aria-controls="allergy-panel" aria-labelledby="allergy-label allergy-summary">
+            <span id="allergy-summary">Ningún alérgeno</span>
+            <svg aria-hidden="true"><use href="#i-chevron"/></svg>
+          </button>
+          <button type="button" class="allergy__reset" id="allergy-reset" hidden>Quitar filtro</button>
+        </div>
+        <div class="allergy__panel" id="allergy-panel" hidden>
+          <fieldset>
+            <legend>Marca todos los que te afecten. Los platos que los lleven se quedan en la carta, tachados.</legend>
+            <div class="allergy__options" id="allergy-options"></div>
+          </fieldset>
+          <div class="allergy__foot">
+            <button type="button" class="allergy__clear" id="allergy-clear">Desmarcar todos</button>
+            <button type="button" class="btn btn--ink allergy__done" id="allergy-done">Ver la carta</button>
+          </div>
+        </div>
+        <p class="allergy__status" id="allergy-status" role="status"></p>
+      </div>
+
       <div class="cabinet" id="cabinet">
         <!-- Las carpetas se generan desde js/data.js -->
       </div>

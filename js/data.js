@@ -225,28 +225,28 @@ window.EL_CANDIL = {
           titulo: "Vinos tintos",
           columnas: ["Copa", "Botella"],
           platos: [
-            { nombre: "Rioja Crianza", desc: "D.O.Ca. Rioja", precios: [3.5, 18] },
-            { nombre: "Ribera del Duero Roble", desc: "D.O. Ribera del Duero", precios: [3.8, 20] },
-            { nombre: "Toro joven", desc: "D.O. Toro", precios: [3, 15] }
+            { nombre: "Rioja Crianza", desc: "D.O.Ca. Rioja", precios: [3.5, 18], alergenos: ["sulfitos"] },
+            { nombre: "Ribera del Duero Roble", desc: "D.O. Ribera del Duero", precios: [3.8, 20], alergenos: ["sulfitos"] },
+            { nombre: "Toro joven", desc: "D.O. Toro", precios: [3, 15], alergenos: ["sulfitos"] }
           ]
         },
         {
           titulo: "Blancos y rosados",
           columnas: ["Copa", "Botella"],
           platos: [
-            { nombre: "Verdejo", desc: "D.O. Rueda", precios: [3, 16] },
-            { nombre: "Albariño", desc: "D.O. Rías Baixas", precios: [4, 22] },
-            { nombre: "Rosado de Navarra", desc: "D.O. Navarra", precios: [3, 15] }
+            { nombre: "Verdejo", desc: "D.O. Rueda", precios: [3, 16], alergenos: ["sulfitos"] },
+            { nombre: "Albariño", desc: "D.O. Rías Baixas", precios: [4, 22], alergenos: ["sulfitos"] },
+            { nombre: "Rosado de Navarra", desc: "D.O. Navarra", precios: [3, 15], alergenos: ["sulfitos"] }
           ]
         },
         {
           titulo: "Cervezas, vermut y sangría",
           platos: [
-            { nombre: "Caña", precio: 2.2 },
-            { nombre: "Tercio", precio: 3 },
-            { nombre: "Cerveza sin alcohol", precio: 2.8 },
-            { nombre: "Vermut de grifo", desc: "Con su aceituna y piel de naranja.", precio: 3, etiquetas: ["casa"] },
-            { nombre: "Sangría", desc: "Jarra de un litro.", precio: 14 }
+            { nombre: "Caña", precio: 2.2, alergenos: ["gluten"] },
+            { nombre: "Tercio", precio: 3, alergenos: ["gluten"] },
+            { nombre: "Cerveza sin alcohol", precio: 2.8, alergenos: ["gluten"] },
+            { nombre: "Vermut de grifo", desc: "Con su aceituna y piel de naranja.", precio: 3, alergenos: ["sulfitos"], etiquetas: ["casa"] },
+            { nombre: "Sangría", desc: "Jarra de un litro.", precio: 14, alergenos: ["sulfitos"] }
           ]
         },
         {

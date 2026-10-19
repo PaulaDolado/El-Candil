@@ -29,17 +29,24 @@
       if (TAGS[t]) parts.push('<span class="tag">' + TAGS[t] + "</span>");
     });
     if (item.alergenos && item.alergenos.length) {
-      var names = item.alergenos.map(function (a) { return D.alergenos[a] || a; });
-      parts.push('<span class="dish__allergens">' + esc(names.join(", ")) + "</span>");
+      parts.unshift('<span class="tag tag--warn" hidden>No apto</span>');
+      parts.push('<span class="dish__allergens">' + item.alergenos.map(function (a) {
+        return '<span class="al" data-a="' + esc(a) + '">' + esc(D.alergenos[a] || a) + "</span>";
+      }).join(", ") + "</span>");
     }
     return parts.length ? '<div class="dish__meta">' + parts.join("") + "</div>" : "";
+  }
+
+  // Cada plato o bebida lleva sus alérgenos en un atributo para poder filtrarlos.
+  function allergenAttr(item) {
+    return ' data-allergens="' + esc((item.alergenos || []).join(" ")) + '"';
   }
 
   function renderDishes(section) {
     var d = 0;
     return section.grupos.map(function (g) {
       return '<ul class="dishes">' + g.platos.map(function (p) {
-        return '<li class="dish reveal" style="--d:' + (d++) + '">' +
+        return '<li class="dish reveal" style="--d:' + (d++) + '"' + allergenAttr(p) + ">" +
           '<div class="dish__row"><h4 class="dish__name">' + esc(p.nombre) + '</h4>' +
           '<span class="dish__leader" aria-hidden="true"></span>' +
           '<span class="dish__price">' + price(p.precio) + "</span></div>" +
@@ -60,7 +67,7 @@
         return '<div class="course reveal" style="--d:' + (++d) + '">' +
           '<h4 class="course__title">' + esc(g.titulo) + "</h4><ul>" +
           g.platos.map(function (p) {
-            return '<li><p class="course__dish">' + esc(p.nombre) + "</p>" + meta(p) + "</li>";
+            return "<li" + allergenAttr(p) + '><p class="course__dish">' + esc(p.nombre) + "</p>" + meta(p) + "</li>";
           }).join("") + "</ul></div>";
       }).join("") + "</div>";
   }
@@ -75,8 +82,8 @@
           cols.map(function (c) { return "<span>" + esc(c) + "</span>"; }).join("") + "</h4>" +
         "<ul>" + g.platos.map(function (p) {
           var prices = p.precios || [p.precio];
-          return '<li class="drink"><span class="drink__name">' + esc(p.nombre) +
-            (p.desc ? '<span class="drink__desc">' + esc(p.desc) + "</span>" : "") + "</span>" +
+          return '<li class="drink"' + allergenAttr(p) + '><div class="drink__name"><span class="drink__title">' + esc(p.nombre) + "</span>" +
+            (p.desc ? '<span class="drink__desc">' + esc(p.desc) + "</span>" : "") + meta(p) + "</div>" +
             prices.map(function (v, i) {
               var label = cols[i] ? '<span class="sr-only">' + esc(cols[i]) + ": </span>" : "";
               return '<span class="drink__price">' + label + price(v) + "</span>";
@@ -109,7 +116,7 @@
           "</button>" +
         "</h3>" +
         '<div class="folder__body">' +
-          '<div class="folder__lip" aria-hidden="true"><span>' + sum[0] + "</span><span>" + sum[1] + "</span></div>" +
+          '<div class="folder__lip" aria-hidden="true"><span class="folder__count">' + sum[0] + "</span><span>" + sum[1] + "</span></div>" +
           '<div class="folder__inner"><div class="folder__content" id="contenido-' + s.id + '" role="region" aria-label="' + esc(s.titulo) + '">' +
             '<p class="folder__title reveal" aria-hidden="true">' + esc(s.titulo) + "</p>" +
             (s.nota ? '<p class="folder__note reveal">' + esc(s.nota) + "</p>" : "") +
@@ -154,6 +161,81 @@
   function openFolder(id) {
     var f = document.getElementById("carpeta-" + id);
     if (f) toggle(f, true);
+  }
+
+  /* ---------- Filtro de alérgenos ---------- */
+
+  var allergy = $("#allergy");
+  var allergyToggle = $("#allergy-toggle");
+  var allergyPanel = $("#allergy-panel");
+
+  function joinNames(list) {
+    return list.length > 1 ? list.slice(0, -1).join(", ") + " y " + list[list.length - 1] : list.join("");
+  }
+
+  function selectedAllergens() {
+    return $all("#allergy-options input:checked").map(function (i) { return i.value; });
+  }
+
+  function applyAllergens() {
+    var sel = selectedAllergens();
+    var items = $all("#cabinet [data-allergens]");
+    var ok = 0;
+
+    items.forEach(function (el) {
+      var list = el.dataset.allergens ? el.dataset.allergens.split(" ") : [];
+      var hit = list.some(function (a) { return sel.indexOf(a) > -1; });
+      el.classList.toggle("is-excluded", hit);
+      if (!hit) ok++;
+      var warn = $(".tag--warn", el);
+      if (warn) warn.hidden = !hit;
+      $all(".al", el).forEach(function (s) { s.classList.toggle("is-hit", sel.indexOf(s.dataset.a) > -1); });
+    });
+
+    $all("#cabinet .folder").forEach(function (f) {
+      var count = $(".folder__count", f);
+      if (!count.dataset.base) count.dataset.base = count.textContent;
+      var mine = $all("[data-allergens]", f);
+      var good = mine.filter(function (el) { return !el.classList.contains("is-excluded"); }).length;
+      count.textContent = sel.length ? good + " de " + mine.length + " aptos para ti" : count.dataset.base;
+    });
+
+    var names = sel.map(function (a) { return D.alergenos[a]; });
+    $("#allergy-summary").textContent = !sel.length ? "Ningún alérgeno"
+      : names.length > 3 ? names.slice(0, 2).join(", ") + " y " + (names.length - 2) + " más"
+      : joinNames(names);
+    allergy.classList.toggle("is-active", sel.length > 0);
+    $("#allergy-reset").hidden = !sel.length;
+    $("#allergy-status").textContent = sel.length
+      ? "Tachamos lo que lleva " + joinNames(names.map(function (n) { return n.toLowerCase(); })) +
+        ". Puedes tomar " + ok + " de " + items.length + " platos y bebidas."
+      : "";
+  }
+
+  function setAllergyPanel(open) {
+    allergyPanel.hidden = !open;
+    allergyToggle.setAttribute("aria-expanded", String(open));
+  }
+
+  function clearAllergens() {
+    $all("#allergy-options input").forEach(function (i) { i.checked = false; });
+    applyAllergens();
+  }
+
+  function initAllergy() {
+    $("#allergy-options").innerHTML = Object.keys(D.alergenos).map(function (k) {
+      return '<label class="chip"><input type="checkbox" value="' + esc(k) + '"><span>' + esc(D.alergenos[k]) + "</span></label>";
+    }).join("");
+
+    $("#allergy-options").addEventListener("change", applyAllergens);
+    allergyToggle.addEventListener("click", function () { setAllergyPanel(allergyPanel.hidden); });
+    $("#allergy-done").addEventListener("click", function () { setAllergyPanel(false); allergyToggle.focus(); });
+    $("#allergy-clear").addEventListener("click", clearAllergens);
+    $("#allergy-reset").addEventListener("click", function () { clearAllergens(); allergyToggle.focus(); });
+    allergy.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !allergyPanel.hidden) { setAllergyPanel(false); allergyToggle.focus(); }
+    });
+    applyAllergens();
   }
 
   /* ---------- Horario ---------- */
@@ -395,6 +477,7 @@
   /* ---------- Arranque ---------- */
 
   renderCabinet();
+  initAllergy();
   renderToday();
   renderHours();
   renderInfo();
