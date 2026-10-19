@@ -59,6 +59,9 @@
   <main>
     <!-- Portada: la etiqueta -->
     <section class="hero" id="inicio" aria-labelledby="hero-title">
+      <div class="hero__photo" aria-hidden="true">
+        <img src="img/sala.webp" alt="" width="736" height="736" fetchpriority="high">
+      </div>
       <div class="label">
         <div class="label__frame">
           <svg class="label__candil" aria-hidden="true"><use href="#candil"/></svg>
@@ -173,18 +176,20 @@
         </div>
 
         <aside class="ticket" aria-label="Resumen de tu reserva">
-          <div class="ticket__paper">
-            <p class="ticket__brand">El Candil</p>
-            <p class="ticket__kind">Reserva de mesa</p>
-            <dl class="ticket__rows">
-              <div><dt>Día</dt><dd data-t="fecha">—</dd></div>
-              <div><dt>Hora</dt><dd data-t="hora">—</dd></div>
-              <div><dt>Comensales</dt><dd data-t="comensales">2</dd></div>
-              <div><dt>A nombre de</dt><dd data-t="nombre">—</dd></div>
-              <div><dt>Teléfono</dt><dd data-t="telefono">—</dd></div>
-              <div class="ticket__notes"><dt>Comentarios</dt><dd data-t="notas">—</dd></div>
-            </dl>
-            <p class="ticket__stamp" aria-hidden="true">Enviada</p>
+          <div class="ticket__sheet">
+            <div class="ticket__paper">
+              <p class="ticket__brand">El Candil</p>
+              <p class="ticket__kind">Reserva de mesa</p>
+              <dl class="ticket__rows">
+                <div><dt>Día</dt><dd data-t="fecha">—</dd></div>
+                <div><dt>Hora</dt><dd data-t="hora">—</dd></div>
+                <div><dt>Comensales</dt><dd data-t="comensales">2</dd></div>
+                <div><dt>A nombre de</dt><dd data-t="nombre">—</dd></div>
+                <div><dt>Teléfono</dt><dd data-t="telefono">—</dd></div>
+                <div class="ticket__notes"><dt>Comentarios</dt><dd data-t="notas">—</dd></div>
+              </dl>
+              <p class="ticket__stamp" aria-hidden="true">Enviada</p>
+            </div>
           </div>
           <button class="btn btn--ink btn--wide" type="submit">
             <svg aria-hidden="true"><use href="#i-chat"/></svg>
