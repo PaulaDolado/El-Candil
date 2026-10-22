@@ -1,18 +1,19 @@
 # 🕯️ El Candil
 
-Web del restaurante El Candil: la carta en un archivador de carpetas y la reserva de mesa por WhatsApp, en una sola página.
+Web del restaurante El Candil: la carta en un archivador de carpetas y la reserva de mesa con control de aforo y comprobante por WhatsApp, en una sola página.
 
 ![HTML5](https://img.shields.io/badge/HTML5-150C0C?logo=html5&logoColor=EACEAA)
 ![CSS](https://img.shields.io/badge/CSS-34150F?logo=css&logoColor=EACEAA)
 ![JavaScript](https://img.shields.io/badge/JavaScript-85431E?logo=javascript&logoColor=EACEAA)
-![Sin dependencias](https://img.shields.io/badge/dependencias-0-D39858)
+![Supabase](https://img.shields.io/badge/Supabase-reservas-D39858?logo=supabase&logoColor=150C0C)
+![WhatsApp Business](https://img.shields.io/badge/WhatsApp-Business%20API-85431E?logo=whatsapp&logoColor=EACEAA)
 ![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-listo-EACEAA?logo=github&logoColor=150C0C&labelColor=EACEAA)
 
 🔗 [Sitio en vivo](https://pauladolado.github.io/El-Candil/) (disponible en cuanto se active GitHub Pages, ver [Despliegue](#despliegue))
 
 ![Portada de El Candil](docs/portada.png)
 
-Página pública del restaurante. El comensal consulta la carta abriendo carpetas de un archivador, una por sección (menú del día, entrantes, otros primeros, carnes, pescados, postres, menú infantil y bebidas), con precios y alérgenos de cada plato. Después reserva mesa en un formulario que comprueba el horario, va rellenando un ticket de reserva y abre WhatsApp con el mensaje ya escrito.
+Página pública del restaurante. El comensal consulta la carta abriendo carpetas de un archivador, una por sección (menú del día, entrantes, otros primeros, carnes, pescados, postres, menú infantil y bebidas), con precios y alérgenos de cada plato. Después reserva mesa en un formulario que solo ofrece las horas con sitio, guarda la reserva respetando el aforo del local y, si el cliente lo pide, le envía el comprobante por WhatsApp desde el número del restaurante.
 
 ## Índice
 
@@ -20,7 +21,7 @@ Página pública del restaurante. El comensal consulta la carta abriendo carpeta
 - [Arquitectura](#arquitectura)
 - [Puesta en marcha](#puesta-en-marcha)
 - [La carta: el archivador](#la-carta-el-archivador)
-- [Reservas por WhatsApp](#reservas-por-whatsapp)
+- [Reservas y aforo](#reservas-y-aforo)
 - [Horario](#horario)
 - [Editar los datos](#editar-los-datos)
 - [Añadir una sección a la carta](#añadir-una-sección-a-la-carta)
@@ -35,12 +36,13 @@ Página pública del restaurante. El comensal consulta la carta abriendo carpeta
 | Capa | Tecnología |
 | --- | --- |
 | Lenguaje | HTML5, CSS y JavaScript sin módulos (funciona también abriendo el archivo con doble clic) |
-| Build | Ninguno: no hay `package.json`, dependencias ni paso de compilación |
+| Build | Ninguno en la web: no hay `package.json`, dependencias ni paso de compilación |
 | Estilos | Una sola hoja, `css/styles.css`, con la paleta en variables CSS |
 | Tipografías | Pencerio (alojada en el propio proyecto), Zodiak y General Sans (API de Fontshare) |
 | Iconos e ilustración | SVG propios dentro de `index.html` (el candil, flechas, teléfono, mapa) |
 | Datos | Un único archivo, `js/data.js`, con la información del restaurante y la carta |
-| Reservas | Enlace `wa.me` de WhatsApp con el mensaje generado en el navegador |
+| Reservas | Supabase: PostgreSQL con funciones para el aforo y Row Level Security |
+| Comprobante | Edge Function de Supabase (Deno) que llama a la API de WhatsApp Business (Cloud API) |
 | Servidor local | `http-server` mediante `npx`, sin instalar nada en el proyecto |
 | Hosting | Cualquier hosting estático; pensado para GitHub Pages |
 
@@ -54,9 +56,16 @@ js/data.js  ──►  js/app.js  ──►  index.html
 
 - `index.html` contiene la estructura que no cambia: la portada en forma de etiqueta, los huecos de cada sección y el formulario de reserva.
 - `js/data.js` define `window.EL_CANDIL` con la información del restaurante, los alérgenos y la carta.
-- `js/app.js` lee esos datos y genera las carpetas de la carta, la línea de «hoy abrimos…» de la portada, la tabla de horario, las horas disponibles para reservar y el mensaje de WhatsApp.
+- `js/app.js` lee esos datos y genera las carpetas de la carta, la línea de «hoy abrimos…» de la portada, la tabla de horario y las horas que se pueden reservar, y habla con Supabase para la reserva.
+- `supabase/` contiene la base de datos de reservas y la función que envía el comprobante. Cómo ponerlo en marcha: [supabase/README.md](supabase/README.md).
 
-No hay backend. La reserva no se guarda en ningún servidor: llega al restaurante como un mensaje de WhatsApp.
+```
+Web ──► crear_reserva()      guarda la reserva si cabe en el aforo
+    ──► disponibilidad()     marca las horas completas
+    ──► enviar-comprobante   ──► API de WhatsApp Business ──► cliente
+```
+
+Sin Supabase configurado, la web sigue funcionando: «Reservar» envía la reserva al WhatsApp del restaurante, como al principio.
 
 ## Puesta en marcha
 
@@ -89,27 +98,18 @@ Hay tres tipos de sección:
 
 Cada plato puede llevar etiquetas (`veg`, `vegano`, `compartir`, `casa`) y su lista de alérgenos, que se muestra con el nombre completo de cada uno.
 
-## Reservas por WhatsApp
+## Reservas y aforo
 
-1. El comensal elige el día. Solo se ofrecen días de hoy a tres meses vista.
-2. Aparecen las horas libres de ese día, separadas en comida y cena, cada 30 minutos hasta la última hora de reserva. Si el día es hoy, se ocultan las horas que ya han pasado.
-3. Indica comensales (de 1 a 12), nombre, teléfono y, si quiere, comentarios (alergias, trona, celebración…).
-4. A la derecha, un ticket de reserva se rellena a la vez que el formulario.
-5. Al enviar se comprueba cada campo; si falta algo, se marca con un mensaje que dice qué corregir y el cursor salta al primer error.
-6. Si todo está bien, se abre WhatsApp con un mensaje como este, dirigido al número del restaurante:
+1. El comensal elige el día (de hoy a tres meses vista) y cuántos son.
+2. Aparecen las horas de ese día, separadas en comida y cena, cada 30 minutos hasta la última hora de reserva. Las que ya no tienen sitio para ese número de personas salen tachadas como «Completo»; si se cambia el número de comensales, se recalculan.
+3. Rellena nombre, teléfono y, si quiere, comentarios (alergias, trona, celebración…). El ticket de la derecha se va completando a la vez.
+4. **Reservar mesa** comprueba cada campo y guarda la reserva. El servidor vuelve a mirar el aforo en ese instante: si alguien ha cogido las últimas plazas, avisa de cuántas quedan y propone otra hora.
+5. Con la reserva guardada, el ticket se sella como «Confirmada», muestra el código de reserva (por ejemplo `K7M2QX`) y el formulario queda bloqueado para no duplicarla.
+6. **Enviar comprobante por WhatsApp** se activa entonces. El cliente recibe, desde el WhatsApp del restaurante, un mensaje con su nombre, día, hora, comensales, código, dirección y el teléfono para cambios.
+7. **Añadir al calendario** guarda la reserva como evento de dos horas con aviso dos horas antes: en iPhone y en el ordenador descarga un archivo `.ics` (Calendario de Apple, Outlook…); en Android abre Google Calendar con el evento ya relleno. También aparece sin Supabase, marcada como «por confirmar».
+8. «Hacer otra reserva» deja el formulario limpio.
 
-```
-Hola, quiero reservar mesa en El Candil:
-• Día: sábado, 17 de octubre
-• Hora: 21:00
-• Comensales: 3
-• Nombre: Ana
-• Teléfono: 600 123 456
-
-¡Gracias!
-```
-
-El ticket se sella con «Enviada» y debajo aparece un enlace por si WhatsApp no se ha abierto, junto con el teléfono del restaurante. La mesa queda confirmada cuando el restaurante responde al mensaje.
+**Aforo:** cada reserva ocupa sus comensales durante el tiempo que dura una comida (120 minutos por defecto). Una reserva solo se acepta si, en ningún momento de ese tramo, la sala supera el aforo (60 por defecto). Los dos valores se cambian en la tabla `ajustes` de Supabase, sin tocar la web.
 
 Los días de cierre muestran un aviso («Los lunes cerramos. Elige otro día.») y los grupos de más de 12 personas se derivan al teléfono.
 
@@ -142,7 +142,8 @@ horario: {
 | --- | --- |
 | `info.nombre`, `info.direccion`, `info.ciudad` | Nombre y dirección (también se usan en el enlace «Cómo llegar») |
 | `info.telefono` | Teléfono que se muestra y se marca al pulsarlo |
-| `info.whatsapp` | Número que recibe las reservas: prefijo de país y número, sin espacios ni `+` (por ejemplo `34600123456`) |
+| `info.whatsapp` | Número que recibe las reservas cuando no hay Supabase: prefijo de país y número, sin espacios ni `+` (por ejemplo `34600123456`) |
+| `reservas.supabaseUrl`, `reservas.supabaseKey` | URL y clave pública del proyecto de Supabase; ver [supabase/README.md](supabase/README.md) |
 | `info.horario` | Turnos por día de la semana (0 = domingo … 6 = sábado) |
 | `info.maxComensales` | Máximo de personas por reserva online |
 | `alergenos` | Nombres de los 14 alérgenos de declaración obligatoria |
@@ -225,6 +226,11 @@ El-Candil/
 │   └── Pencerio-LICENSE.txt
 ├── img/
 │   └── favicon.svg
+├── supabase/
+│   ├── migrations/       Tablas de reservas y ajustes, funciones de aforo
+│   ├── functions/
+│   │   └── enviar-comprobante/   Envío del comprobante por WhatsApp
+│   └── README.md         Puesta en marcha de las reservas online
 ├── docs/                 Capturas para este README
 ├── PRODUCT.md            Contexto del producto (público, objetivos, restricciones)
 └── README.md

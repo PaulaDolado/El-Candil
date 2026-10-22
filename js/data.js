@@ -22,7 +22,20 @@ window.EL_CANDIL = {
       5: { comida: ["13:00", "16:00", "15:00"], cena: ["20:30", "00:00", "23:00"] },
       6: { comida: ["13:00", "16:30", "15:30"], cena: ["20:30", "00:00", "23:00"] }
     },
-    maxComensales: 12
+    maxComensales: 12,
+    // Para el evento de calendario: zona horaria del restaurante y minutos que se reserva la mesa.
+    zonaHoraria: "Europe/Madrid",
+    duracionReserva: 120
+  },
+
+  /*
+   * Reservas online con Supabase (ver supabase/README.md).
+   * Copia aquí la URL del proyecto y la clave pública (anon o publishable); ambas son públicas.
+   * Mientras estén vacías, «Reservar mesa» envía la reserva al WhatsApp del restaurante.
+   */
+  reservas: {
+    supabaseUrl: "",
+    supabaseKey: ""
   },
 
   // Alérgenos (los 14 de declaración obligatoria en la UE).

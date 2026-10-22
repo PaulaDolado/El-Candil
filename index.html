@@ -37,6 +37,7 @@
       <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 1 3.6 6.7L4 20l1.3-3.5A7.9 7.9 0 0 1 4 12z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 10.2c.4 2 2 3.6 4 4.2l1.2-1.1 1.8.8-.3 1.6c-3.6.2-7-3.1-6.8-6.8L10.5 8.6l.8 1.8z" fill="currentColor"/></symbol>
       <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
       <symbol id="i-plus" viewBox="0 0 24 24"><path d="M6 12h12M12 6v12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 9.5h17M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 14.5l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6.2-6.5-11.2a6.5 6.5 0 0 1 13 0C18.5 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="9.8" r="2.3" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
       <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.6 3.5l2.6.4 1.3 4-1.9 1.4a11 11 0 0 0 6.1 6.1l1.4-1.9 4 1.3.4 2.6c-.2 1.7-1.6 3-3.3 3A15.7 15.7 0 0 1 3.5 6.8c0-1.7 1.4-3.1 3.1-3.3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
     </defs>
@@ -128,7 +129,7 @@
     <section class="reserva" id="reservar" aria-labelledby="reserva-title">
       <div class="reserva__head">
         <h2 class="script-title" id="reserva-title">Reserva tu mesa</h2>
-        <p>Rellena los datos y te abrimos WhatsApp con el mensaje ya escrito. Solo tienes que enviarlo y te confirmamos la mesa.</p>
+        <p id="reserva-intro">Elige día, hora y cuántos sois. Te confirmamos la mesa al momento y, si quieres, te enviamos el comprobante por WhatsApp.</p>
       </div>
 
       <form class="booking" id="booking" novalidate>
@@ -181,6 +182,7 @@
               <p class="ticket__brand">El Candil</p>
               <p class="ticket__kind">Reserva de mesa</p>
               <dl class="ticket__rows">
+                <div class="ticket__code" id="ticket-code" hidden><dt>Código</dt><dd data-t="codigo"></dd></div>
                 <div><dt>Día</dt><dd data-t="fecha">—</dd></div>
                 <div><dt>Hora</dt><dd data-t="hora">—</dd></div>
                 <div><dt>Comensales</dt><dd data-t="comensales">2</dd></div>
@@ -188,14 +190,27 @@
                 <div><dt>Teléfono</dt><dd data-t="telefono">—</dd></div>
                 <div class="ticket__notes"><dt>Comentarios</dt><dd data-t="notas">—</dd></div>
               </dl>
-              <p class="ticket__stamp" aria-hidden="true">Enviada</p>
+              <p class="ticket__stamp" id="ticket-stamp" aria-hidden="true">Enviada</p>
             </div>
           </div>
-          <button class="btn btn--ink btn--wide" type="submit">
-            <svg aria-hidden="true"><use href="#i-chat"/></svg>
-            Enviar reserva por WhatsApp
-          </button>
+          <button class="btn btn--ink btn--wide" type="submit" id="btn-reservar">Reservar mesa</button>
           <div class="ticket__status" id="booking-status" role="status"></div>
+          <div class="receipt" id="receipt" hidden>
+            <button class="btn btn--line btn--wide" type="button" id="btn-comprobante" disabled aria-describedby="receipt-hint">
+              <svg aria-hidden="true"><use href="#i-chat"/></svg>
+              Enviar comprobante por WhatsApp
+            </button>
+            <p class="receipt__hint" id="receipt-hint">Disponible en cuanto tu reserva esté confirmada.</p>
+            <div class="ticket__status" id="receipt-status" role="status"></div>
+          </div>
+          <div class="calendar" id="calendar" hidden>
+            <button class="btn btn--line btn--wide" type="button" id="btn-calendario">
+              <svg aria-hidden="true"><use href="#i-calendar"/></svg>
+              Añadir al calendario
+            </button>
+            <p class="receipt__hint">Con un aviso 2 horas antes. <a id="link-google-calendar" target="_blank" rel="noopener">¿Usas Google Calendar? Añádela ahí</a>.</p>
+          </div>
+          <button class="ticket__again" type="button" id="btn-otra" hidden>Hacer otra reserva</button>
         </aside>
       </form>
     </section>

@@ -1553,3 +1553,66 @@ body::after {
 .foot__name {
   text-shadow: 0 0 2px rgb(211 152 88 / .35), 0 0 36px rgb(211 152 88 / .35);
 }
+
+/* ---------- Reserva confirmada y comprobante ---------- */
+
+.btn:disabled { cursor: not-allowed; }
+.btn[aria-busy="true"] { cursor: progress; }
+.btn--ink:disabled { background: var(--coffee); border-color: var(--coffee); transform: none; }
+.btn--line:disabled {
+  color: color-mix(in srgb, var(--coffee) 60%, var(--whiskey));
+  border-color: color-mix(in srgb, var(--coffee) 60%, var(--whiskey));
+  background: transparent;
+  box-shadow: none;
+}
+.btn--line:not(:disabled) { background: var(--grain), var(--champagne); }
+.btn--line:not(:disabled):hover { background: var(--coffee); color: var(--champagne); }
+
+.receipt { display: grid; gap: .55rem; }
+.receipt__hint { font-size: .9rem; color: var(--coffee); }
+
+.ticket__code dd {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: .14em;
+}
+
+.ticket__again {
+  justify-self: start;
+  padding: .4rem 0;
+  border: 0;
+  background: none;
+  color: var(--balsamico);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: .25em;
+  cursor: pointer;
+}
+
+.slot span { gap: .45rem; }
+.slot__full {
+  display: none;
+  font-family: var(--f-text);
+  font-weight: 600;
+  font-size: .7rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.slot.is-full span {
+  background: transparent;
+  color: color-mix(in srgb, var(--coffee) 70%, var(--whiskey));
+  border-style: dashed;
+  text-decoration: line-through;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.slot.is-full .slot__full { display: inline; text-decoration: none; }
+.slot input:disabled:not(:checked) + span { cursor: not-allowed; }
+#slots[aria-busy="true"] .slots__list { opacity: .6; transition: opacity .2s; }
+.ticket__stamp {
+  background: transparent;
+  mix-blend-mode: multiply;
+}
+.calendar { display: grid; gap: .55rem; }
+.calendar .receipt__hint a { color: var(--balsamico); font-weight: 600; text-underline-offset: .2em; }

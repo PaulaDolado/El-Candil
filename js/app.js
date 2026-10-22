@@ -299,6 +299,35 @@
   var comensales = $("#f-comensales");
   var ticket = $(".ticket");
   var status = $("#booking-status");
+  var receiptStatus = $("#receipt-status");
+  var btnReservar = $("#btn-reservar");
+  var btnComprobante = $("#btn-comprobante");
+
+  // Con Supabase configurado la reserva se guarda y se controla el aforo;
+  // sin él, «Reservar mesa» manda la reserva al WhatsApp del restaurante.
+  var cfg = D.reservas || {};
+  var online = Boolean(cfg.supabaseUrl && cfg.supabaseKey);
+  var reserva = null;      // { id, codigo, token } de la reserva confirmada
+  var libresPorHora = {};  // plazas libres de cada hora del día elegido
+  var pedidoLibres = 0;
+
+  function api(path, body) {
+    return fetch(cfg.supabaseUrl.replace(/\/$/, "") + path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: cfg.supabaseKey },
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      return r.json().catch(function () { return null; }).then(function (data) {
+        // Las respuestas {ok:false} son errores de negocio; el resto, fallos de red o servidor.
+        if (!r.ok && !(data && data.ok === false)) throw new Error("HTTP " + r.status);
+        return data;
+      });
+    });
+  }
+
+  function telLink() {
+    return '<a href="tel:+34' + info.telefono.replace(/\D/g, "") + '">' + esc(info.telefono) + "</a>";
+  }
 
   function iso(d) {
     return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
@@ -341,9 +370,52 @@
       return '<div class="slots__group"><h4>' + (g.tipo === "comida" ? "Comida" : "Cena") + '</h4><div class="slots__list">' +
         g.horas.map(function (h) {
           return '<label class="slot"><input type="radio" name="hora" value="' + h + '"' + (h === prev ? " checked" : "") +
-            '><span>' + h + "</span></label>";
+            '><span>' + h + '<small class="slot__full">Completo</small></span></label>';
         }).join("") + "</div></div>";
-    }).join("");
+    }).join("") + '<p class="slots__empty" id="slots-note" hidden></p>';
+    loadAvailability();
+  }
+
+  function loadAvailability() {
+    libresPorHora = {};
+    if (!online) return;
+    var horas = $all('#slots input[name="hora"]').map(function (i) { return i.value; });
+    if (!horas.length) return;
+    var pedido = ++pedidoLibres;
+    var box = $("#slots");
+    box.setAttribute("aria-busy", "true");
+    api("/rest/v1/rpc/disponibilidad", { p_fecha: fecha.value, p_horas: horas })
+      .then(function (rows) {
+        if (pedido !== pedidoLibres || !Array.isArray(rows)) return;
+        rows.forEach(function (r) { libresPorHora[r.hora] = r.libres; });
+        applyAvailability();
+      })
+      // Si falla la consulta dejamos todas las horas: el servidor vuelve a comprobar el aforo al reservar.
+      .catch(function () {})
+      .then(function () { if (pedido === pedidoLibres) box.removeAttribute("aria-busy"); });
+  }
+
+  function applyAvailability() {
+    var n = parseInt(comensales.value, 10) || 1;
+    var slots = $all("#slots .slot");
+    var full = 0;
+    slots.forEach(function (label) {
+      var input = $("input", label);
+      var libres = libresPorHora[input.value];
+      var isFull = typeof libres === "number" && libres < n;
+      input.disabled = isFull || Boolean(reserva);
+      label.classList.toggle("is-full", isFull);
+      if (isFull) {
+        full++;
+        if (input.checked) { input.checked = false; updateTicket(); }
+      }
+    });
+    var note = $("#slots-note");
+    if (note) {
+      note.hidden = !(slots.length && full === slots.length);
+      note.innerHTML = "Ese día ya no queda sitio para " + n + (n === 1 ? " persona" : " personas") +
+        ". Prueba otro día o llámanos al " + telLink() + ".";
+    }
   }
 
   function setTicket(key, value) {
@@ -446,10 +518,11 @@
         comensales.value = Math.min(Math.max(n, 1), info.maxComensales);
         setError("comensales", "", comensales);
         clampGuests();
+        applyAvailability();
         updateTicket();
       });
     });
-    comensales.addEventListener("input", function () { setError("comensales", "", comensales); clampGuests(); updateTicket(); });
+    comensales.addEventListener("input", function () { setError("comensales", "", comensales); clampGuests(); applyAvailability(); updateTicket(); });
 
     ["nombre", "telefono", "notas"].forEach(function (k) {
       form.elements[k].addEventListener("input", function () {
@@ -461,17 +534,289 @@
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       status.innerHTML = "";
-      if (!validate()) return;
-      var url = "https://wa.me/" + info.whatsapp + "?text=" + encodeURIComponent(message());
-      window.open(url, "_blank", "noopener");
-      ticket.classList.add("is-sent");
-      status.innerHTML = "Te hemos abierto WhatsApp con la reserva escrita. <strong>Envía el mensaje</strong> y te confirmaremos la mesa lo antes posible. " +
-        '¿No se ha abierto? <a href="' + url + '" target="_blank" rel="noopener">Abrir WhatsApp</a> o llámanos al <a href="tel:+34' +
-        info.telefono.replace(/\D/g, "") + '">' + esc(info.telefono) + "</a>.";
+      if (reserva || btnReservar.disabled || !validate()) return;
+      if (online) reservar();
+      else sendToRestaurant();
     });
+    btnComprobante.addEventListener("click", sendReceipt);
+    $("#btn-otra").addEventListener("click", resetBooking);
+    $("#btn-calendario").addEventListener("click", addToCalendar);
+
+    $("#receipt").hidden = !online;
+    if (!online) {
+      $("#reserva-intro").textContent = "Rellena los datos y te abrimos WhatsApp con la reserva ya escrita. Solo tienes que enviarla y te confirmamos la mesa.";
+      btnReservar.textContent = "Reservar por WhatsApp";
+    }
 
     clampGuests();
     updateTicket();
+  }
+
+  // Sin Supabase: la reserva viaja al WhatsApp del restaurante.
+  function bookingData(codigo) {
+    return {
+      fecha: fecha.value,
+      hora: form.elements.hora.value,
+      comensales: parseInt(comensales.value, 10),
+      nombre: form.elements.nombre.value.trim(),
+      codigo: codigo || null
+    };
+  }
+
+  function sendToRestaurant() {
+    showCalendar(bookingData());
+    var url = "https://wa.me/" + info.whatsapp + "?text=" + encodeURIComponent(message());
+    window.open(url, "_blank", "noopener");
+    $("#ticket-stamp").textContent = "Enviada";
+    ticket.classList.add("is-sent");
+    status.innerHTML = "Te hemos abierto WhatsApp con la reserva escrita. <strong>Envía el mensaje</strong> y te confirmaremos la mesa lo antes posible. " +
+      '¿No se ha abierto? <a href="' + url + '" target="_blank" rel="noopener">Abrir WhatsApp</a> o llámanos al ' + telLink() + ".";
+  }
+
+  function setBusy(button, busy, label) {
+    button.disabled = busy;
+    button.setAttribute("aria-busy", String(busy));
+    if (label) button.lastChild.textContent = label;
+  }
+
+  function lockForm(locked) {
+    $all("input, textarea, .stepper__btn", form).forEach(function (el) { el.disabled = locked; });
+    if (!locked) { clampGuests(); applyAvailability(); }
+  }
+
+  function reservar() {
+    var date = parseISO(fecha.value);
+    var hora = form.elements.hora.value;
+    setBusy(btnReservar, true, "Reservando…");
+
+    api("/rest/v1/rpc/crear_reserva", {
+      p_fecha: fecha.value,
+      p_hora: hora,
+      p_comensales: parseInt(comensales.value, 10),
+      p_nombre: form.elements.nombre.value.trim(),
+      p_telefono: form.elements.telefono.value.trim(),
+      p_notas: form.elements.notas.value.trim() || null
+    }).then(function (res) {
+      if (res && res.ok) {
+        confirmBooking(res, date, hora);
+        return;
+      }
+      setBusy(btnReservar, false, "Reservar mesa");
+      var err = res && res.error;
+      if (err === "completo") {
+        setError("hora", res.libres > 0
+          ? "A las " + hora + " solo quedan " + res.libres + (res.libres === 1 ? " plaza" : " plazas") + ". Elige otra hora o reduce los comensales."
+          : "Las " + hora + " se acaban de completar. Elige otra hora.");
+        loadAvailability();
+        var slot = $('#slots input[name="hora"]:not(:disabled)');
+        if (slot) slot.focus();
+      } else if (err === "telefono") {
+        setError("telefono", "Revisa el teléfono: no parece un número válido.", form.elements.telefono);
+        form.elements.telefono.focus();
+      } else if (err === "comensales") {
+        setError("comensales", "Para grupos de más de " + res.max + " personas, llámanos al " + info.telefono + ".", comensales);
+        comensales.focus();
+      } else if (err === "fecha" || err === "hora") {
+        setError("fecha", "Ese día u hora ya no se puede reservar. Elige otro.", fecha);
+        fecha.focus();
+      } else {
+        status.innerHTML = "No hemos podido guardar la reserva. Revisa los datos e inténtalo otra vez o llámanos al " + telLink() + ".";
+      }
+    }).catch(function () {
+      setBusy(btnReservar, false, "Reservar mesa");
+      status.innerHTML = "No hemos podido conectar para guardar la reserva. Inténtalo de nuevo en un momento o llámanos al " + telLink() + ".";
+    });
+  }
+
+  function confirmBooking(res, date, hora) {
+    reserva = { id: res.id, codigo: res.codigo, token: res.token };
+    lockForm(true);
+    setBusy(btnReservar, true, "Mesa reservada");
+    $("#ticket-code").hidden = false;
+    $('[data-t="codigo"]').textContent = res.codigo;
+    $("#ticket-stamp").textContent = "Confirmada";
+    ticket.classList.add("is-sent");
+    status.innerHTML = "<strong>¡Mesa reservada!</strong> Te esperamos el " + longDate.format(date) + " a las " + hora +
+      ". Tu código de reserva es <strong>" + esc(res.codigo) + "</strong>.";
+    btnComprobante.disabled = false;
+    $("#receipt-hint").textContent = "Te lo mandamos desde el WhatsApp de " + info.nombre + " al " + form.elements.telefono.value.trim() + ".";
+    showCalendar(bookingData(res.codigo));
+    $("#btn-otra").hidden = false;
+  }
+
+  function sendReceipt() {
+    if (!reserva) return;
+    receiptStatus.innerHTML = "";
+    setBusy(btnComprobante, true, "Enviando comprobante…");
+    api("/functions/v1/enviar-comprobante", { id: reserva.id, token: reserva.token })
+      .then(function (res) {
+        if (res && res.ok) {
+          setBusy(btnComprobante, false, "Volver a enviar el comprobante");
+          receiptStatus.innerHTML = "Te hemos enviado el comprobante por WhatsApp. Si no te llega en unos minutos, revisa el número o llámanos al " + telLink() + ".";
+        } else if (res && res.error === "limite") {
+          setBusy(btnComprobante, true, "Comprobante enviado");
+          receiptStatus.innerHTML = "Ya te hemos enviado el comprobante varias veces. Si no lo encuentras, llámanos al " + telLink() + ".";
+        } else {
+          throw new Error(res && res.error);
+        }
+      })
+      .catch(function () {
+        setBusy(btnComprobante, false, "Enviar comprobante por WhatsApp");
+        receiptStatus.innerHTML = "No hemos podido enviar el comprobante ahora mismo. Tu reserva sigue confirmada con el código <strong>" +
+          esc(reserva.codigo) + "</strong>; puedes intentarlo de nuevo en un momento.";
+      });
+  }
+
+  function resetBooking() {
+    reserva = null;
+    form.reset();
+    lockForm(false);
+    setBusy(btnReservar, false, "Reservar mesa");
+    setBusy(btnComprobante, false, "Enviar comprobante por WhatsApp");
+    btnComprobante.disabled = true;
+    $("#receipt-hint").textContent = "Disponible en cuanto tu reserva esté confirmada.";
+    $("#ticket-code").hidden = true;
+    hideCalendar();
+    $("#btn-otra").hidden = true;
+    status.innerHTML = "";
+    receiptStatus.innerHTML = "";
+    renderSlots();
+    clampGuests();
+    updateTicket();
+    fecha.focus();
+  }
+
+  /* ---------- Añadir al calendario ---------- */
+
+  var eventoReserva = null;  // datos del evento de la última reserva hecha
+
+  // Instante UTC de una hora local del restaurante (respeta el cambio de horario).
+  function restaurantTimeToUTC(isoDate, hhmm) {
+    var p = isoDate.split("-").map(Number);
+    var h = hhmm.split(":").map(Number);
+    var wall = Date.UTC(p[0], p[1] - 1, p[2], h[0], h[1]);
+    var fmt = new Intl.DateTimeFormat("en-GB", {
+      timeZone: info.zonaHoraria || "Europe/Madrid", hourCycle: "h23",
+      year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"
+    });
+    var guess = wall;
+    for (var i = 0; i < 2; i++) {
+      var parts = {};
+      fmt.formatToParts(new Date(guess)).forEach(function (x) { parts[x.type] = Number(x.value); });
+      var seen = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute);
+      guess += wall - seen;
+    }
+    return new Date(guess);
+  }
+
+  function icsDate(d) {
+    return d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  }
+
+  function icsText(v) {
+    return String(v).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+  }
+
+  // Las líneas de un .ics no deben pasar de 75 bytes: se parten con salto + espacio.
+  function icsFold(line) {
+    var enc = new TextEncoder();
+    var out = "";
+    var bytes = 0;
+    Array.from(line).forEach(function (ch) {
+      var n = enc.encode(ch).length;
+      if (bytes + n > 74) { out += "\r\n "; bytes = 1; }
+      out += ch;
+      bytes += n;
+    });
+    return out;
+  }
+
+  function buildEvent(data) {
+    var start = restaurantTimeToUTC(data.fecha, data.hora);
+    var end = new Date(start.getTime() + (info.duracionReserva || 120) * 60000);
+    var lineas = [];
+    if (data.codigo) lineas.push("Código de reserva: " + data.codigo);
+    else lineas.push("Pendiente de que el restaurante la confirme por WhatsApp.");
+    lineas.push("A nombre de: " + data.nombre);
+    lineas.push("Comensales: " + data.comensales);
+    lineas.push("Teléfono del restaurante: " + info.telefono);
+    return {
+      titulo: "Reserva en " + info.nombre + " · " + data.comensales + (data.comensales === 1 ? " persona" : " personas") +
+        (data.codigo ? "" : " (por confirmar)"),
+      lugar: info.nombre + ", " + info.direccion + ", " + info.ciudad,
+      detalle: lineas.join("\n"),
+      uid: (data.codigo || String(start.getTime()) + "-" + Math.random().toString(36).slice(2, 8)) + "@elcandil",
+      start: start,
+      end: end
+    };
+  }
+
+  function icsFile(ev) {
+    return [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//" + info.nombre + "//Reservas//ES",
+      "CALSCALE:GREGORIAN",
+      "METHOD:PUBLISH",
+      "BEGIN:VEVENT",
+      "UID:" + ev.uid,
+      "DTSTAMP:" + icsDate(new Date()),
+      "DTSTART:" + icsDate(ev.start),
+      "DTEND:" + icsDate(ev.end),
+      "SUMMARY:" + icsText(ev.titulo),
+      "LOCATION:" + icsText(ev.lugar),
+      "DESCRIPTION:" + icsText(ev.detalle),
+      "BEGIN:VALARM",
+      "TRIGGER:-PT2H",
+      "ACTION:DISPLAY",
+      "DESCRIPTION:" + icsText(ev.titulo),
+      "END:VALARM",
+      "END:VEVENT",
+      "END:VCALENDAR"
+    ].map(icsFold).join("\r\n") + "\r\n";
+  }
+
+  function googleCalendarUrl(ev) {
+    return "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+      "&text=" + encodeURIComponent(ev.titulo) +
+      "&dates=" + icsDate(ev.start) + "/" + icsDate(ev.end) +
+      "&details=" + encodeURIComponent(ev.detalle) +
+      "&location=" + encodeURIComponent(ev.lugar);
+  }
+
+  function showCalendar(data) {
+    eventoReserva = buildEvent(data);
+    $("#link-google-calendar").href = googleCalendarUrl(eventoReserva);
+    $("#calendar").hidden = false;
+  }
+
+  function hideCalendar() {
+    eventoReserva = null;
+    $("#calendar").hidden = true;
+  }
+
+  function addToCalendar() {
+    if (!eventoReserva) return;
+    var ua = navigator.userAgent;
+    // En Android la app de Google Calendar no suele abrir archivos .ics: mejor el enlace directo.
+    if (/Android/i.test(ua)) {
+      window.open(googleCalendarUrl(eventoReserva), "_blank", "noopener");
+      return;
+    }
+    var ics = icsFile(eventoReserva);
+    // Safari en iPhone/iPad abre el evento directamente y ofrece «Añadir a Calendario».
+    if (/iPhone|iPad|iPod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) {
+      window.location.href = "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
+      return;
+    }
+    var url = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "reserva-el-candil.ics";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
   }
 
   /* ---------- Arranque ---------- */
